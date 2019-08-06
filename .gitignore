@@ -9,6 +9,7 @@
 *.zip
 *.tar.gz
 *.rar
+*.dat
 hs_err_pid*
 directions.txt
 locations.txt

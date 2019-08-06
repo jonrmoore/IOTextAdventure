@@ -7,17 +7,34 @@ public class Locations implements Map<Integer, Location> {
     private static Map<Integer, Location> locations = new LinkedHashMap<>();
 
     public static void main(String[] args) throws IOException {
-        try(
-                BufferedWriter locFile = new BufferedWriter(new FileWriter("locations.txt"));
-                BufferedWriter dirFile = new BufferedWriter(new FileWriter("directions.txt"))
-        ) {
-            for (Location location : locations.values()) {
-                locFile.write(location.getLocationID() + "," + location.getDescription() + "\n");
-                for (String direction : location.getExits().keySet()) {
-                    dirFile.write(location.getLocationID() + "," + direction + "," + location.getExits().get(direction) + "\n");
+        try (DataOutputStream locFile = new DataOutputStream(new BufferedOutputStream(
+                        new FileOutputStream("locations.dat")))) {
+            for (Location loc : locations.values()) {
+                locFile.writeInt(loc.getLocationID());
+                locFile.writeUTF(loc.getDescription());
+                System.out.println("Writing location " + loc.getLocationID() + ": " + loc.getDescription());
+                System.out.println("Writing " + (loc.getExits().size() -1) + " exits");
+                locFile.writeInt(loc.getExits().size());
+                for (String direction : loc.getExits().keySet()) {
+                    if (!direction.equalsIgnoreCase("Q")) {
+                        System.out.println("\t\t" + direction + "," + loc.getExits().get(direction));
+                        locFile.writeUTF(direction);
+                        locFile.writeInt(loc.getExits().get(direction));
+                    }
                 }
             }
         }
+        // try(
+        //         BufferedWriter locFile = new BufferedWriter(new FileWriter("locations.txt"));
+        //         BufferedWriter dirFile = new BufferedWriter(new FileWriter("directions.txt"))
+        // ) {
+        //     for (Location location : locations.values()) {
+        //         locFile.write(location.getLocationID() + "," + location.getDescription() + "\n");
+        //         for (String direction : location.getExits().keySet()) {
+        //             dirFile.write(location.getLocationID() + "," + direction + "," + location.getExits().get(direction) + "\n");
+        //         }
+        //     }
+        // }
     }
     static {
         try(Scanner scanner = new Scanner(
