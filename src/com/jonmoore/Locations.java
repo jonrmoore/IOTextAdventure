@@ -5,13 +5,56 @@ import java.util.*;
 
 public class Locations implements Map<Integer, Location> {
     private static Map<Integer, Location> locations = new LinkedHashMap<>();
+    private static Map<Integer, IndexRecord> index = new LinkedHashMap<>();
 
     public static void main(String[] args) throws IOException {
-        try (ObjectOutputStream locFile = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("locations.dat")))) {
+        /**
+         * RANDOM ACCESS
+         */
+        try (RandomAccessFile rao = new RandomAccessFile("locations_rand.dat", "rwd")) {
+            // The first 4 bytes contain the number of locations
+            rao.writeInt(locations.size());
+
+            // The next 4 bytes contain the start offset and locations section
+            int indexSize = locations.size() * 3 * Integer.BYTES;
+
+            // The next section of the file contains the index. The index is 1692 bytes long, starting at 8 and ending at 1699
+            int locationStart = (int) (indexSize + rao.getFilePointer() + Integer.BYTES);
+
+            rao.writeInt(locationStart);
+            long indexStart = rao.getFilePointer();
+
+            int startPointer = locationStart;
+            rao.seek(startPointer);
+
             for (Location location : locations.values()) {
-                locFile.writeObject(location);
+                rao.writeInt(location.getLocationID());
+                rao.writeUTF(location.getDescription());
+                StringBuilder sb = new StringBuilder();
+                for (String direction : location.getExits().keySet()) {
+                    if (!direction.equalsIgnoreCase("Q")) {
+                        sb.append(direction);
+                        sb.append(",");
+                        sb.append(location.getExits().get(direction));
+                        sb.append(",");
+                    }
+                }
+                rao.writeUTF(sb.toString());
+                IndexRecord record = new IndexRecord(startPointer, (int) (rao.getFilePointer() - 1));
+                index.put(location.getLocationID(), record);
+
+                startPointer = (int) rao.getFilePointer();
             }
         }
+
+        /**
+         * SEQUENTIAL
+         */
+        // try (ObjectOutputStream locFile = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("locations.dat")))) {
+        //     for (Location location : locations.values()) {
+        //         locFile.writeObject(location);
+        //     }
+        // }
     }
 
     static {
@@ -32,38 +75,6 @@ public class Locations implements Map<Integer, Location> {
         } catch (ClassNotFoundException e) {
             System.out.println("ClassNotFoundException" + e.getMessage());
         }
-
-        // try(Scanner scanner = new Scanner(new BufferedReader(new FileReader("locations_big.txt")))) {
-        //     scanner.useDelimiter(",");
-        //     while(scanner.hasNextLine()) {
-        //         int loc = scanner.nextInt();
-        //         scanner.skip(scanner.delimiter());
-        //         String description = scanner.nextLine();
-        //         System.out.println("Imported loc: " + loc + ": " + description);
-        //         Map<String, Integer> tempExit = new HashMap<>();
-        //         locations.put(loc, new Location(loc, description, tempExit));
-        //     }
-
-        // } catch(IOException e) {
-        //     e.printStackTrace();
-        // }
-
-        // // Now read the exits
-        // try (BufferedReader dirFile = new BufferedReader(new FileReader("directions_big.txt"))) {
-        //     String input;
-        //     while((input = dirFile.readLine()) != null) {
-        //         String[] data = input.split(",");
-        //         int loc = Integer.parseInt(data[0]);
-        //         String direction = data[1];
-        //         int destination = Integer.parseInt(data[2]);
-
-        //         System.out.println(loc + ": " + direction + ": " + destination);
-        //         Location location = locations.get(loc);
-        //         location.addExit(direction, destination);
-        //     }
-        // } catch (IOException e) {
-        //     e.printStackTrace();
-        // }
     }
 
     @Override

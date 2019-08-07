@@ -2,10 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="bc056e93-fb07-4ae6-ae98-8030e561e9ca" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/jonmoore/IndexRecord.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/jonmoore/Location.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/jonmoore/Location.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/jonmoore/Locations.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/jonmoore/Locations.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/jonmoore/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/jonmoore/Main.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
